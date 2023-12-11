@@ -1,4 +1,4 @@
-name: di
+name: minimal_di
 description: "Flutter Dependency Injection package for minimalist."
 version: 0.0.1
 repository: https://github.com/heebaek/di
