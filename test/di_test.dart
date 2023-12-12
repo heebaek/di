@@ -7,6 +7,10 @@ void main() {
     var one = DI.instance.get<int>();
     expect(one, 1);
 
+    DI.instance.register("test");
+    var test = DI.instance.get<String>();
+    expect(test, "test");
+
     DI.instance.register(2, named: "two");
     var two = DI.instance.get<int>(named: "two");
     expect(two, 2);
