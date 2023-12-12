@@ -1,10 +1,10 @@
 name: minimal_di
-description: "Flutter Dependency Injection package for minimalist."
+description: "Minimalistic Flutter DI Container for Dependency Injection for a simple situation"
 version: 0.0.1
 repository: https://github.com/heebaek/di
 
 environment:
-  sdk: '>=3.2.3 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
