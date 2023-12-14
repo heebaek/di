@@ -9,3 +9,7 @@
 ## 0.0.3
 
 * Type to string bug fix
+
+## 0.0.4
+
+* Change works even before register
