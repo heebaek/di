@@ -44,7 +44,7 @@ class DI extends IDependencyInjection
   @override
   void change<T extends Object>(T instance, {String? named}) {
     named ??= T.toString();
-    _container.update(named, (x) => instance);
+    _container[named] = instance;
   }
   
   @override

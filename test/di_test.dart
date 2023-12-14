@@ -3,7 +3,10 @@ import 'package:minimal_di/minimal_di.dart';
 
 void main() {
   test('register', () {
-    DI.instance.register(1);
+
+    DI.instance.change(0);
+
+    DI.instance.change(1);
     var one = DI.instance.get<int>();
     expect(one, 1);
 
