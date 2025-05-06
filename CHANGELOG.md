@@ -13,3 +13,7 @@
 ## 0.0.4
 
 * Change works even before register
+
+## 0.0.5 
+
+* dart format to all source files
