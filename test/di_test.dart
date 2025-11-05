@@ -190,4 +190,44 @@ void main() {
     di.swap<int>(2, named: 'x');
     expect(di.get<int>(named: 'x'), 2);
   });
+
+  test('readme example', () async {
+    final di = Dependency.instance; // or Dependency()
+
+    // 1) Singleton (sync) — same DateTime
+    di.putSingleton<DateTime>(DateTime.now(), named: 'singleton');
+    final s1 = di.get<DateTime>(named: 'singleton');
+    final s2 = di.get<DateTime>(named: 'singleton');
+    assert(identical(s1, s2));
+
+    // 2) Lazy Singleton (sync) — same DateTime
+    di.putLazySingleton<DateTime>(() => DateTime.now(), named: 'lazy');
+    final l1 = di.get<DateTime>(named: 'lazy');
+    final l2 = di.get<DateTime>(named: 'lazy'); // same instance
+    assert(identical(l1, l2));
+
+    // 3) Factory (sync) — different DateTime
+    di.putFactory<DateTime>(() => DateTime.now(), named: 'factory');
+    final f1 = di.get<DateTime>(named: 'factory');
+    final f2 = di.get<DateTime>(named: 'factory'); // different each time
+    assert(!identical(f1, f2));
+
+    // 4) Lazy Singleton (async) — same DateTime
+    di.putAsyncLazySingleton<DateTime>(() async {
+      await Future.delayed(const Duration(milliseconds: 50));
+      return DateTime.now();
+    }, named: 'asyncLazy');
+    final al1 = await di.getAsync<DateTime>(named: 'asyncLazy');
+    final al2 = await di.getAsync<DateTime>(named: 'asyncLazy');
+    assert(identical(al1, al2));
+
+    // 5) Factory (async) — different DateTime
+    di.putAsyncFactory<DateTime>(() async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      return DateTime.now();
+    }, named: 'asyncFactory');
+    final af1 = await di.getAsync<DateTime>(named: 'asyncFactory');
+    final af2 = await di.getAsync<DateTime>(named: 'asyncFactory');
+    assert(!identical(af1, af2));
+  });
 }

@@ -1,6 +1,6 @@
 name: minimal_di
 description: "Minimalistic Flutter DI Container for Dependency Injection for a simple situation"
-version: 0.0.5
+version: 0.0.6
 repository: https://github.com/heebaek/di
 
 environment:
@@ -14,7 +14,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

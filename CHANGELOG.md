@@ -17,3 +17,7 @@
 ## 0.0.5 
 
 * dart format to all source files
+
+## 0.0.6
+
+* recreated from scratch
