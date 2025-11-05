@@ -21,3 +21,7 @@
 ## 0.0.6
 
 * recreated from scratch
+
+## 0.0.7
+
+* rename swap to set

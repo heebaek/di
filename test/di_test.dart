@@ -8,9 +8,9 @@ final _random = Random(); // 전역으로 한 번만 생성
 void main() {
   test('singleton', () {
     var di = Dependency();
-    di.swap(0);
+    di.set(0);
 
-    di.swap(1);
+    di.set(1);
     var one = di.get<int>();
     expect(one, 1);
 
@@ -22,7 +22,7 @@ void main() {
     var two = di.get<int>(named: "two");
     expect(two, 2);
 
-    di.swap<int>(3, named: "two");
+    di.set<int>(3, named: "two");
     var three = di.get<int>(named: "two");
     expect(three, 3);
 
@@ -183,11 +183,11 @@ void main() {
     expect(di.has<String>(named: 'missing'), isFalse);
   });
 
-  // --- 추가: swap 교체 동작 ---
-  test('swap replaces existing instance', () {
+  // --- 추가: set 교체 동작 ---
+  test('set replaces existing instance', () {
     final di = Dependency();
     di.putSingleton<int>(1, named: 'x');
-    di.swap<int>(2, named: 'x');
+    di.set<int>(2, named: 'x');
     expect(di.get<int>(named: 'x'), 2);
   });
 

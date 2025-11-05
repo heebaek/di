@@ -12,7 +12,7 @@ class Dependency implements DependencyContainer {
   }
 
   @override
-  void swap<T extends Object>(T instance, {String? named}) {
+  void set<T extends Object>(T instance, {String? named}) {
     named ??= T.toString();
     _container[named] = instance;
   }

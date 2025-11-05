@@ -64,7 +64,7 @@ void main() async {
 
 ### API (Dependency)
 - Check: `has<T>({String? named}) -> bool`
-- Replace: `swap<T>(T instance, {String? named})`
+- Replace: `set<T>(T instance, {String? named})`
 - Register (sync)
   - `putSingleton<T>(T instance, {String? named})`
   - `putLazySingleton<T>(T Function() func, {String? named})`
@@ -125,11 +125,11 @@ expect(di.get<DateTime>(), isA<DateTime>());
 expect(di.get<DateTime>(named: 'two'), isA<DateTime>());
 ```
 
-Swap
+Set
 ```dart
 final di = Dependency();
 di.putSingleton<DateTime>(DateTime.now(), named: 'x');
-di.swap<DateTime>(DateTime.now(), named: 'x');
+di.set<DateTime>(DateTime.now(), named: 'x');
 expect(di.get<DateTime>(named: 'x'), isA<DateTime>());
 ```
 

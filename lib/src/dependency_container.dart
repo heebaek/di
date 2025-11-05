@@ -3,7 +3,7 @@ abstract interface class DependencyContainer {
   bool has<T extends Object>({String? named});
 
   // 2. 인스턴스 교체 (주로 테스트/디버깅 목적)
-  void swap<T extends Object>(T instance, {String? named});
+  void set<T extends Object>(T instance, {String? named});
 
   // 3. 즉시 싱글톤 등록 (가장 기본, 동기적 인스턴스 제공)
   void putSingleton<T extends Object>(T instance, {String? named});
