@@ -1,2 +1,2 @@
-export 'src/implement.dart';
-export 'src/interface.dart';
+export 'src/dependency.dart';
+export 'src/dependency_container.dart';
