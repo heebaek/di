@@ -25,3 +25,7 @@
 ## 0.0.7
 
 * rename swap to set
+
+## 0.0.8
+
+* add parameter feature to factory.

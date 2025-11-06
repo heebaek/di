@@ -72,9 +72,9 @@ void main() {
 
   test("factory", () async {
     var di = Dependency();
-    di.putFactory<int>(randomNumber);
-    var one = await di.getAsync<int>();
-    var two = await di.getAsync<int>();
+    di.putFactory<int>(randomNumber, named: 'factory_test');
+    var one = di.get<int>(named: 'factory_test');
+    var two = di.get<int>(named: 'factory_test');
 
     expect(one, isNot(equals(two)));
   });
@@ -229,5 +229,48 @@ void main() {
     final af1 = await di.getAsync<DateTime>(named: 'asyncFactory');
     final af2 = await di.getAsync<DateTime>(named: 'asyncFactory');
     assert(!identical(af1, af2));
+  });
+
+  // --- 추가: 파라미터형 팩토리 (sync) ---
+  test('factoryParam sync: requires param and returns computed value', () {
+    final di = Dependency();
+    di.putFactoryParam<String, int>((x) => 'v${x + 1}', named: 'fp');
+
+    expect(di.get<String>(named: 'fp', param: 1), 'v2');
+    expect(di.get<String>(named: 'fp', param: 41), 'v42');
+    expect(() => di.get<String>(named: 'fp'), throwsA(isA<Exception>()));
+  });
+
+  // --- 추가: 파라미터형 팩토리 (async) ---
+  test('factoryParam async: requires param and awaits result', () async {
+    final di = Dependency();
+    di.putAsyncFactoryParam<DateTime, int>((ms) async {
+      await Future.delayed(Duration(milliseconds: 10));
+      return DateTime.fromMillisecondsSinceEpoch(ms);
+    }, named: 'afp');
+
+    final ms = 1700000000000;
+    final dt = await di.getAsync<DateTime>(named: 'afp', param: ms);
+    expect(dt.millisecondsSinceEpoch, ms);
+    await expectLater(
+      di.getAsync<DateTime>(named: 'afp'),
+      throwsA(isA<Exception>()),
+    );
+  });
+
+  // --- 추가: non-param 등록에서 param 전달 시 무시(정상 동작) ---
+  test('non-param factory ignores param', () {
+    final di = Dependency();
+    di.putFactory<int>(() => 7, named: 'nf');
+    expect(di.get<int>(named: 'nf', param: 123), 7);
+  });
+
+  // --- 추가: param 타입 체크 (record 사용) ---
+  test('factoryParam with record parameter', () {
+    final di = Dependency();
+    di.putFactoryParam<String, ({int a, int b})>((p) => 'sum=${p.a + p.b}',
+        named: 'rec');
+    final res = di.get<String>(named: 'rec', param: (a: 2, b: 3));
+    expect(res, 'sum=5');
   });
 }

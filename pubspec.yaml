@@ -1,6 +1,6 @@
 name: minimal_di
 description: "Minimalistic Flutter DI Container for Dependency Injection for a simple situation"
-version: 0.0.7
+version: 0.0.8
 repository: https://github.com/heebaek/di
 
 environment:

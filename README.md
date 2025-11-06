@@ -59,8 +59,14 @@ void main() async {
   final af1 = await di.getAsync<DateTime>(named: 'asyncFactory');
   final af2 = await di.getAsync<DateTime>(named: 'asyncFactory');
   assert(!identical(af1, af2));
+
+  // 6) Parameterized Factory (sync)
+  di.putFactoryParam<String, int>((x) => 'value: ${x! * 2}', named: 'paramFactory');
+  final pf1 = di.get<String>(named: 'paramFactory', param: 10); // "value: 20"
+  final pf2 = di.get<String>(named: 'paramFactory', param: 20); // "value: 40"
+  assert(pf1 != pf2);
 }
-```
+```î
 
 ### API (Dependency)
 - Check: `has<T>({String? named}) -> bool`
@@ -69,12 +75,14 @@ void main() async {
   - `putSingleton<T>(T instance, {String? named})`
   - `putLazySingleton<T>(T Function() func, {String? named})`
   - `putFactory<T>(T Function() func, {String? named})`
+  - `putFactoryParam<T, P>(T Function(P param), {String? named})`
 - Register (async)
   - `putAsyncLazySingleton<T>(Future<T> Function() func, {String? named})`
   - `putAsyncFactory<T>(Future<T> Function() func, {String? named})`
+  - `putAsyncFactoryParam<T, P>(Future<T> Function(P param), {String? named})`
 - Resolve
-  - Sync: `get<T>({String? named})`
-  - Async: `getAsync<T>({String? named})`
+  - Sync: `get<T>({String? named, Object? param})`
+  - Async: `getAsync<T>({String? named, Object? param})`
 
 ### Examples
 Sync lazy singleton — same DateTime
@@ -115,6 +123,26 @@ final n2 = await di.getAsync<DateTime>();
 assert(!identical(n1, n2));
 ```
 
+Parameterized factories (sync / async)
+```dart
+final di = Dependency();
+
+// sync param factory: from milliseconds
+di.putFactoryParam<DateTime, int>((ms) => DateTime.fromMillisecondsSinceEpoch(ms), named: 'ms');
+final d1 = di.get<DateTime>(named: 'ms', param: 1700000000000);
+
+// async param factory: delayed now
+di.putAsyncFactoryParam<DateTime, int>((delayMs) async {
+  await Future.delayed(Duration(milliseconds: delayMs));
+  return DateTime.now();
+}, named: 'delay');
+final d2 = await di.getAsync<DateTime>(named: 'delay', param: 20);
+
+// passing param to non-param factory is ignored
+di.putFactory<int>(() => 7, named: 'np');
+final seven = di.get<int>(named: 'np', param: 123); // 7
+```
+
 Named keys and defaults
 ```dart
 final di = Dependency();
@@ -137,12 +165,16 @@ expect(di.get<DateTime>(named: 'x'), isA<DateTime>());
 - If you register async (Async Lazy / Async Factory), you must use `getAsync<T>()`.
   - Calling `get<T>()` will throw a clear error.
 - If you register sync, both `get<T>()` and `getAsync<T>()` are fine.
+- Parameterized factories (`putFactoryParam`, `putAsyncFactoryParam`) require `param` when resolving.
+  - Calling `get/getAsync` without `param` will throw an error.
 
 ### Errors
 - Not found: `Exception('Key <name> not found')`
 - Duplicate: `Exception('Key <name> already exists')`
 - Wrong combination (e.g., async reg + get):
   - `Exception('... Use getAsync() instead.')`
+ - Missing param for parameterized factory:
+   - `Exception('Key <name> requires a parameter. Pass param in get(...)/getAsync(...).')`
 
 ### Tests
 Run all tests:

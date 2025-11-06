@@ -13,6 +13,9 @@ abstract interface class DependencyContainer {
 
   // 5. 팩토리 등록 (동기적 팩토리, 요청 시점마다 새 객체 생성)
   void putFactory<T extends Object>(T Function() func, {String? named});
+  // 5-1. 파라미터형 팩토리 등록 (동기)
+  void putFactoryParam<T extends Object, P>(T Function(P param) func,
+      {String? named});
 
   // --- 비동기 등록 ---
 
@@ -23,12 +26,16 @@ abstract interface class DependencyContainer {
   // 7. 비동기 팩토리 등록 (Async + Factory, 요청 시점마다 새 Future 반환)
   void putAsyncFactory<T extends Object>(Future<T> Function() func,
       {String? named});
+  // 7-1. 파라미터형 팩토리 등록 (비동기)
+  void putAsyncFactoryParam<T extends Object, P>(
+      Future<T> Function(P param) func,
+      {String? named});
 
   // --- 조회 함수 (get 함수가 빠져있어 추가했습니다) ---
 
   // 8. 동기적 조회
-  T get<T extends Object>({String? named});
+  T get<T extends Object>({String? named, Object? param});
 
   // 9. 비동기적 조회
-  Future<T> getAsync<T extends Object>({String? named});
+  Future<T> getAsync<T extends Object>({String? named, Object? param});
 }

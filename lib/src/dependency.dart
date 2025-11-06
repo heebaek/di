@@ -45,6 +45,16 @@ class Dependency implements DependencyContainer {
   }
 
   @override
+  void putFactoryParam<T extends Object, P>(T Function(P param) func,
+      {String? named}) {
+    named ??= T.toString();
+    if (_container.containsKey(named)) {
+      throw Exception('Key $named already exists');
+    }
+    _container[named] = _FactoryParam<P>(func);
+  }
+
+  @override
   void putAsyncLazySingleton<T extends Object>(
     Future<T> Function() func, {
     String? named,
@@ -69,7 +79,19 @@ class Dependency implements DependencyContainer {
   }
 
   @override
-  T get<T extends Object>({String? named}) {
+  void putAsyncFactoryParam<T extends Object, P>(
+    Future<T> Function(P param) func, {
+    String? named,
+  }) {
+    named ??= T.toString();
+    if (_container.containsKey(named)) {
+      throw Exception('Key $named already exists');
+    }
+    _container[named] = _AsyncFactoryParam<P>(func);
+  }
+
+  @override
+  T get<T extends Object>({String? named, Object? param}) {
     named ??= T.toString();
     if (!_container.containsKey(named)) {
       throw Exception('Key $named not found');
@@ -91,11 +113,22 @@ class Dependency implements DependencyContainer {
       throw Exception(
           'Key $named is registered as async factory. Use getAsync() instead.');
     }
+    if (value is _FactoryParam) {
+      if (param == null) {
+        throw Exception(
+            'Key $named requires a parameter. Pass param in get<T>(param: ...)');
+      }
+      return (value as _FactoryParam<Object?>).create(param) as T;
+    }
+    if (value is _AsyncFactoryParam) {
+      throw Exception(
+          'Key $named is async parameterized factory. Use getAsync(param: ...)');
+    }
     return value as T;
   }
 
   @override
-  Future<T> getAsync<T extends Object>({String? named}) async {
+  Future<T> getAsync<T extends Object>({String? named, Object? param}) async {
     named ??= T.toString();
     if (!_container.containsKey(named)) {
       throw Exception('Key $named not found');
@@ -117,6 +150,21 @@ class Dependency implements DependencyContainer {
     }
     if (value is _Factory) {
       return value.create() as T;
+    }
+    if (value is _AsyncFactoryParam) {
+      if (param == null) {
+        throw Exception(
+            'Key $named requires a parameter. Pass param in getAsync<T>(param: ...)');
+      }
+      return await (value as _AsyncFactoryParam<Object?>).create(param) as T;
+    }
+    if (value is _FactoryParam) {
+      if (param == null) {
+        // allow sync param factory to be called without param? keep strict
+        throw Exception(
+            'Key $named requires a parameter. Pass param in getAsync<T>(param: ...)');
+      }
+      return (value as _FactoryParam<Object?>).create(param) as T;
     }
     return value as T;
   }
@@ -150,4 +198,16 @@ class _AsyncFactory {
   final Future<dynamic> Function() _factory;
   _AsyncFactory(this._factory);
   Future<dynamic> create() => _factory();
+}
+
+class _FactoryParam<P> {
+  final dynamic Function(P) _factory;
+  _FactoryParam(this._factory);
+  dynamic create(P param) => _factory(param);
+}
+
+class _AsyncFactoryParam<P> {
+  final Future<dynamic> Function(P) _factory;
+  _AsyncFactoryParam(this._factory);
+  Future<dynamic> create(P param) => _factory(param);
 }
